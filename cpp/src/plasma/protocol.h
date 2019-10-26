@@ -41,6 +41,30 @@ bool VerifyFlatbuffer(T* object, const uint8_t* data, size_t size) {
   return object->Verify(verifier);
 }
 
+/* Set options messages. */
+
+// TODO(suquark): Get rid of raw socket handle
+Status SendSetOptionsRequest(int sock, const std::string& client_name,
+                             int64_t output_memory_limit);
+
+Status ReadSetOptionsRequest(uint8_t* data, size_t size, std::string* client_name,
+                             int64_t* output_memory_quota);
+
+// TODO(suquark): Get rid of raw socket handle
+Status SendSetOptionsReply(int sock, PlasmaError error);
+
+Status ReadSetOptionsReply(uint8_t* data, size_t size);
+
+/* Debug string messages. */
+
+// TODO(suquark): Get rid of raw socket handle
+Status SendGetDebugStringRequest(int sock);
+
+// TODO(suquark): Get rid of raw socket handle
+Status SendGetDebugStringReply(int sock, const std::string& debug_string);
+
+Status ReadGetDebugStringReply(uint8_t* data, size_t size, std::string* debug_string);
+
 /* Plasma Create message functions. */
 
 Status SendCreateRequest(const std::shared_ptr<ServerConnection>& client,
@@ -65,8 +89,25 @@ Status ReadCreateAndSealRequest(const uint8_t* data, size_t size, ObjectID* obje
                                 std::string* object_data, std::string* metadata,
                                 unsigned char* digest);
 
+// TODO(suquark): Replace raw socket with client handle.
+Status SendCreateAndSealBatchRequest(int sock, const std::vector<ObjectID>& object_ids,
+                                     const std::vector<std::string>& data,
+                                     const std::vector<std::string>& metadata,
+                                     const std::vector<std::string>& digests);
+
+Status ReadCreateAndSealBatchRequest(uint8_t* data, size_t size,
+                                     std::vector<ObjectID>* object_id,
+                                     std::vector<std::string>* object_data,
+                                     std::vector<std::string>* metadata,
+                                     std::vector<std::string>* digests);
+
+// TODO(suquark): Replace raw socket with client handle.
+Status SendCreateAndSealBatchReply(int sock, PlasmaError error);
+
 Status SendCreateAndSealReply(const std::shared_ptr<ClientConnection>& client,
                               PlasmaError error);
+
+Status ReadCreateAndSealBatchReply(uint8_t* data, size_t size);
 
 Status ReadCreateAndSealReply(const uint8_t* data, size_t size);
 
